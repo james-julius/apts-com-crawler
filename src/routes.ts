@@ -1,4 +1,4 @@
-import { createPlaywrightRouter, Configuration } from 'crawlee';
+import { createPlaywrightRouter, Configuration, sleep } from 'crawlee';
 
 export const router = createPlaywrightRouter();
 // Get the global configuration
@@ -8,13 +8,18 @@ const config = Configuration.getGlobalConfig();
 // of global configuration to 10 seconds
 config.set('persistStateIntervalMillis', 10_000);
 
-router.addDefaultHandler(async ({ enqueueLinks, log }) => {
-    log.info("Reached new property listing page")
+router.addDefaultHandler(async ({ page, enqueueLinks, log }) => {
+    log.info("Scraping listing page", page)
+
     log.info("Enqueueing property links listed on the page")
     await enqueueLinks({
         label: 'detail',
         selector: 'a.property-link',
     })
+    await sleep(2000)
+    if (await page.isVisible('a[class="next "]')) {
+        await page.locator('a[class="next ]').click();
+    }
 });
 
 
