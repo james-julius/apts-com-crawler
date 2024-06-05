@@ -8,35 +8,47 @@ export const router = createPlaywrightRouter();
 
 router.addDefaultHandler(async ({ page, enqueueLinks, log }) => {
     let numPropertiesScraped = 0;
+    const propertyDetailLinks: string[] = []
     const hrefsScraped: { [key: string]: boolean } = {}
+
+    // Apartments.com runs each page navigation with JS. So we have to go from page to page within the same request
+    // otherwise we see cryptic HTTP2 errors.
     while (true) {
         const currentUrl = page.url();
+        const propertyLinksSelector = 'header.placard-header div.property-information a.property-link'
         log.info(`Scraping listing page: ${currentUrl}`)
 
-        const propertyLinks = (await page.locator('header.placard-header div.property-information a.property-link').all())
+        const propertyLinks = (await page.locator(propertyLinksSelector).all())
         for (const link of propertyLinks) {
             numPropertiesScraped++
+            log.info(`Scraping property #${numPropertiesScraped}`)
+
             const linkHref = await link.getAttribute('href')
+
             if (linkHref && linkHref in hrefsScraped) {
                 log.error(`Scraping duplicate href ${linkHref}`)
+
             } else if (linkHref) {
                 hrefsScraped[linkHref] = true
+                propertyDetailLinks.push(linkHref)
             }
-            log.info(`Scraping property #${numPropertiesScraped} - href:${linkHref}`)
         }
-        await enqueueLinks({
-            label: 'detail',
-            selector: 'div.property-info > div.content-wrapper > a.property-link',
-        })
+
         if (await page.isVisible('a.next')) {
             const nextPageUrl = getNextPageUrl(currentUrl);
             log.info(`Navigating to next page: ${nextPageUrl}`)
+
             await page.locator('a.next').click()
             await sleep(5000)
         } else {
             break;
         }
     }
+    // Enqueue every property detail page and pass them into the detail request handler below
+    await enqueueLinks({
+        label: 'detail',
+        urls: propertyDetailLinks
+    })
 });
 
 

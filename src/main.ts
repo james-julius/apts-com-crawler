@@ -19,7 +19,7 @@ const crawler = new PlaywrightCrawler({
     // proxyConfiguration: new ProxyConfiguration({ proxyUrls: ['...'] }),
     requestHandler: router,
     log: logger,
-    useSessionPool: false,
+    requestHandlerTimeoutSecs: 300,
     // Comment this option to scrape the full website.
     // maxRequestsPerCrawl: 2,
 });
