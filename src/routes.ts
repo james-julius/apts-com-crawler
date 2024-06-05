@@ -1,24 +1,41 @@
 import { createPlaywrightRouter, Configuration, sleep } from 'crawlee';
+import { getNextPageUrl } from './utils.js';
 
 export const router = createPlaywrightRouter();
 // Get the global configuration
 
-const config = Configuration.getGlobalConfig();
-// Set the 'persistStateIntervalMillis' option
-// of global configuration to 10 seconds
-config.set('persistStateIntervalMillis', 10_000);
+
 
 router.addDefaultHandler(async ({ page, enqueueLinks, log }) => {
-    log.info("Scraping listing page", page)
+    let numPropertiesScraped = 0;
+    const hrefsScraped: { [key: string]: boolean } = {}
+    while (true) {
+        const currentUrl = page.url();
+        log.info(`Scraping listing page: ${currentUrl}`)
 
-    log.info("Enqueueing property links listed on the page")
-    await enqueueLinks({
-        label: 'detail',
-        selector: 'a.property-link',
-    })
-    await sleep(2000)
-    if (await page.isVisible('a[class="next "]')) {
-        await page.locator('a[class="next ]').click();
+        const propertyLinks = (await page.locator('header.placard-header div.property-information a.property-link').all())
+        for (const link of propertyLinks) {
+            numPropertiesScraped++
+            const linkHref = await link.getAttribute('href')
+            if (linkHref && linkHref in hrefsScraped) {
+                log.error(`Scraping duplicate href ${linkHref}`)
+            } else if (linkHref) {
+                hrefsScraped[linkHref] = true
+            }
+            log.info(`Scraping property #${numPropertiesScraped} - href:${linkHref}`)
+        }
+        await enqueueLinks({
+            label: 'detail',
+            selector: 'div.property-info > div.content-wrapper > a.property-link',
+        })
+        if (await page.isVisible('a.next')) {
+            const nextPageUrl = getNextPageUrl(currentUrl);
+            log.info(`Navigating to next page: ${nextPageUrl}`)
+            await page.locator('a.next').click()
+            await sleep(5000)
+        } else {
+            break;
+        }
     }
 });
 

@@ -9,11 +9,10 @@ await Actor.init();
 
 const baseUrl = 'https://www.apartments.com/los-angeles-ca/'
 
-// const pages = new Array(17).fill('').map((_, idx) => `${baseUrl.split('?')[0]}?${idx + 1}${baseUrl.split('?')[1]}`)
-// const startUrls = ['https://www.apartments.com/los-angeles-ca', ...pages];
+const pages = new Array(17).fill('').map((_, idx) => `${baseUrl}/${idx+1}`)
 
 const logger = new Log({
-    level: 3
+    level: 4
 });
 
 const crawler = new PlaywrightCrawler({
@@ -21,7 +20,6 @@ const crawler = new PlaywrightCrawler({
     requestHandler: router,
     log: logger,
     useSessionPool: false,
-    navigationTimeoutSecs: 2,
     // Comment this option to scrape the full website.
     // maxRequestsPerCrawl: 2,
 });
