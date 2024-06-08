@@ -46,16 +46,16 @@ router.addDefaultHandler(async ({ request, page, enqueueLinks, log }) => {
         const numPropertiesToScrape = Object.keys(propertiesToScrape).length + 1;
         numPropertiesScraped+= numPropertiesScraped
         log.info(`Found ${numPropertiesToScrape} to scrape`)
-        // if (await page.isVisible('a.next')) {
-        //     const nextPageUrl = getNextPageUrl(currentUrl);
-        //     log.info(`Navigating to next page: ${nextPageUrl}`)
-        //     log.info("Clicking next page")
-        //     await page.locator('a.next').click()
-        //     log.info("Sleeping for 5 seconds")
-        //     await sleep(5000)
-        // } else {
+        if (await page.isVisible('a.next')) {
+            const nextPageUrl = getNextPageUrl(currentUrl);
+            log.info(`Navigating to next page: ${nextPageUrl}`)
+            log.info("Clicking next page")
+            await page.locator('a.next').click()
+            log.info("Sleeping for 5 seconds")
+            await sleep(5000)
+        } else {
             break;
-        // }
+        }
     }
     // Enqueue every property detail page and pass them into the detail request handler below
     await enqueueLinks({
