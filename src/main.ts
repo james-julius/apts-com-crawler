@@ -1,9 +1,13 @@
 // For more information, see https://crawlee.dev/
-import { Log, PlaywrightCrawler, Dataset } from 'crawlee';
+import { Log, PlaywrightCrawler, Dataset, Configuration } from 'crawlee';
 import { Actor } from 'apify';
 import { router } from './routes.js';
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 
+Configuration
 await Actor.init();
 
 // Rideshine service areas
@@ -38,6 +42,7 @@ const crawler = new PlaywrightCrawler({
     log: logger,
     requestHandlerTimeoutSecs: 300,
     // Comment this option to scrape the full website.
+    // maxRequestsPerCrawl: 5
 });
 
 await crawler.run(baseUrls);
