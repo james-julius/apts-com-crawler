@@ -17,7 +17,6 @@ router.addDefaultHandler(async ({ page, enqueueLinks, log, pushData }) => {
 
     // Enable Apartments filter
     try {
-
         log.info("Enabling apartment filter")
         await page.locator('#PropertyType-1').first().click()
         log.info("Succeeded enabling apartment filter")
