@@ -1,13 +1,11 @@
 // For more information, see https://crawlee.dev/
-import { Log, PlaywrightCrawler, Dataset, Configuration } from 'crawlee';
-import { Actor } from 'apify';
-import { router } from './routes.js';
-import dotenv from 'dotenv'
+import { Log, PlaywrightCrawler, Dataset, Configuration } from "crawlee";
+import { Actor } from "apify";
+import { router } from "./routes.js";
+import dotenv from "dotenv";
 
-dotenv.config()
+dotenv.config();
 
-
-Configuration
 await Actor.init();
 
 // Rideshine service areas
@@ -28,24 +26,24 @@ const baseUrls = [
   "https://www.apartments.com/south-pasadena-ca/",
   "https://www.apartments.com/studio-city-ca/",
   "https://www.apartments.com/toluca-lake-ca/",
-  "https://www.apartments.com/west-hollywood-ca/"
+  "https://www.apartments.com/west-hollywood-ca/",
 ];
 // const pages = new Array(17).fill('').map((_, idx) => `${baseUrl}/${idx+1}`)
 
 const logger = new Log({
-    level: 4
+  level: 4,
 });
 
 const crawler = new PlaywrightCrawler({
-    // proxyConfiguration: new ProxyConfiguration({ proxyUrls: ['...'] }),
-    requestHandler: router,
-    log: logger,
-    requestHandlerTimeoutSecs: 300,
-    // Comment this option to scrape the full website.
-    // maxRequestsPerCrawl: 5
+  // proxyConfiguration: new ProxyConfiguration({ proxyUrls: ['...'] }),
+  requestHandler: router,
+  log: logger,
+  requestHandlerTimeoutSecs: 600,
+  // Comment this option to scrape the full website.
+  // maxRequestsPerCrawl: 5
 });
 
 await crawler.run(baseUrls);
 
-await Dataset.exportToCSV('rideshine_service_area_apartments')
-await Actor.exit()
+await Dataset.exportToCSV("rideshine_service_area_apartments");
+await Actor.exit();
