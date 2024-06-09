@@ -53,7 +53,7 @@ router.addDefaultHandler(async ({ request, page, enqueueLinks, log }) => {
       const nextPageUrl = getNextPageUrl(currentUrl);
       log.info(`Navigating to next page: ${nextPageUrl}`);
       log.info("Clicking next page");
-      await page.locator("a.next").click();
+      await page.locator("a.next").click({ force: true });
       log.info("Sleeping for 5 seconds");
       await sleep(5000);
     } else {
