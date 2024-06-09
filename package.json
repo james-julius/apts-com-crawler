@@ -11,6 +11,7 @@
   },
   "devDependencies": {
     "@apify/tsconfig": "^0.1.0",
+    "@types/commander": "^2.12.2",
     "@types/node": "^20.0.0",
     "prettier": "3.3.1",
     "tsx": "^4.4.0",

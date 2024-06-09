@@ -2,9 +2,9 @@ import { createPlaywrightRouter, sleep } from "crawlee";
 import { getNextPageUrl } from "./utils.js";
 import { error } from "console";
 
-export const router = createPlaywrightRouter();
+export const apartmentsDotComRouter = createPlaywrightRouter();
 
-router.addDefaultHandler(async ({ request, page, enqueueLinks, log }) => {
+apartmentsDotComRouter.addDefaultHandler(async ({ request, page, enqueueLinks, log }) => {
   const title = await page.title();
   log.info(`[Default Handler] Scraping: ${title}`, { url: request.loadedUrl });
   let numPropertiesScraped = 0;
@@ -70,7 +70,7 @@ router.addDefaultHandler(async ({ request, page, enqueueLinks, log }) => {
   });
 });
 
-router.addHandler("detail", async ({ request, page, log, pushData }) => {
+apartmentsDotComRouter.addHandler("detail", async ({ request, page, log, pushData }) => {
   const title = await page.title();
   log.info(`[Detail Handler] Scraping: ${title}`, { url: request.loadedUrl });
   const propertyAddress = (
